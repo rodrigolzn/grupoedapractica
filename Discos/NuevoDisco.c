@@ -46,7 +46,7 @@ void NuevoDisco(WINDOW *Wdisco,DISCO **Fichas)
         else
             break;
     }
-
+//
     // Se captura el autor. No puede estar en blanco
     while(true) {
         linea1[0]=0;
