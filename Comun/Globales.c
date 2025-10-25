@@ -29,7 +29,7 @@ void InitGlobal()
     // Valores iniciales de las Estadísticas
     Estadisticas.Fichero=NULL;
     Estadisticas.NumeroFichas=0;
-    Estadisticas.MaxFichas=0;
+    Estadisticas.MaxFichas=1730;
     Estadisticas.TiempoCarga=0;
     Estadisticas.TiempoSeleccion=0;
     Estadisticas.TiempoBurbuja=0;
