@@ -10,10 +10,34 @@
  *****************************************/
 
 #include "Ficheros.h"
+#include <errno.h>
+#define MAX_BUF 8192
 
 void DescartarFichero(DISCO **Fichas,WINDOW *Wfichero)
 {
+    FILE *fichero = NULL;
+    char ruta[50];
+    char buffer[MAX_BUF];
+    char *token;
+    char Tecla;
+    int numeroLineas = 0;
+    int i;
     
-    // Código del alumno
+    if (Estadisticas.NumeroFichas == 0) {
+        VentanaError("No hay discos para descartar");
+        return;
+    }
     
+    Tecla=VentanaSN("Esta seguro de querer descartar todos los ficheros? (S/N)?");
+    if (Tecla == 'S') {
+        return;
+    }
+
+    // Libera el disco de memoria.
+    free(Fichas);
+
+    char msg[80];
+    snprintf(msg, sizeof(msg),
+             "Ficheros desccartados.");
+    VentanaError(msg);
 }
