@@ -58,8 +58,9 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
         return;
     }
 
-    
-    fgets(buffer, MAX_BUF, fichero);
+    // Reserva memoria.
+    for (i = 0; fgets(buffer, MAX_BUF, fichero) != NULL; i++)
+    *Fichas = malloc(i * sizeof(char));
 
     while (fgets(buffer, MAX_BUF, fichero)) {
 
