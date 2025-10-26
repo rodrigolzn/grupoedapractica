@@ -53,7 +53,7 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
         return;
     }
 
-    // ✅ Reserva memoria si estamos reemplazando
+  
     if (!sumar) {
         Estadisticas.NumeroFichas = 0;
         Estadisticas.MaxFichas = 2000;  
@@ -65,7 +65,7 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
         }
     }
 
-    // ✅ Saltamos la cabecera
+  
     fgets(buffer, 1024, fichero);
 
     while (fgets(buffer, 1024, fichero))
