@@ -19,46 +19,47 @@ void ExportarFichero(DISCO **Fichas, WINDOW *Wfichero)
     FILE *fichero;
     char ruta[50];
     int i;
+    //pasamos a consola las posibles soluciones que puede ocurrir en el programa
 
     if(Estadisticas.NumeroFichas == 0) {
         VentanaError("No hay fichas de discos que exportar");
         return;
     }
-
+    //refrescamos 
     touchwin(Wfichero);
     wrefresh(Wfichero);
-
+    //pedimos la ruta
     while(true) {
 
         nocbreak();
         echo();
         curs_set(1);
-
+        //pide la ruta en la posicion 2 22
         mvwscanw(Wfichero, 2, 22, "%49s", ruta);
 
         cbreak();
         noecho();
         curs_set(0);
-
+        
         wmove(Wfichero, 3, 0);
         wclrtoeol(Wfichero);
         wrefresh(Wfichero);
 
         if(ruta[0] != '\0')
             break;
-
+        //si no se ingreso una ruta correcta salta un error
         VentanaError("Introduzca un nombre de fichero");
         touchwin(Wfichero);
         wrefresh(Wfichero);
     }
-
+    //ponemos mensajes a posibles errores
     if ((fichero = fopen(ruta, "w")) == NULL) {
         VentanaError("No se pudo crear el fichero");
         return;
     }
-
+    //cabecera
     fprintf(fichero, "ID;Obra;ApellAutor;NomAutor;Tonalidad;Opus;Duracion\n");
-
+    //recorre el fichero y escribe una a una
     for(i = 0; i < Estadisticas.NumeroFichas; i++) {
         fprintf(fichero,
                 "%d;%s;%s;%s;%s;%s;%s\n",
@@ -72,7 +73,7 @@ void ExportarFichero(DISCO **Fichas, WINDOW *Wfichero)
     }
 
     fclose(fichero);
-
+    //mensaje final
     char msg[100];
     sprintf(msg,"%d discos exportados correctamente",Estadisticas.NumeroFichas);
     VentanaError(msg);

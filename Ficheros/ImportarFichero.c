@@ -26,31 +26,33 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
     char *token;
     int numeroImportados = 0;
     struct timeval inicio, fin;
-
+    //ponemos mensajes de posibles casos que se puedan producir al importar
     if (!sumar && Estadisticas.NumeroFichas != 0) {
         VentanaError("Ya hay discos cargados");
         return;
     }
 
     while (true) {
+        //actualiza la ventana 
         touchwin(Wfichero);
         wrefresh(Wfichero);
 
         nocbreak();
         echo();
         curs_set(1);
+        //lee lo que el usuario haya escrito en la posicion 2 22
         mvwscanw(Wfichero, 2, 22, "%49s", ruta);
         cbreak();
         noecho();
         curs_set(0);
-
+        //sale del bucle si la ruta no esta vacia 
         if (ruta[0] != '\0')
             break;
     }
       
     gettimeofday(&inicio, NULL);
 
-
+    //mensaje de error
     fichero = fopen(ruta, "r");
     if (!fichero) {
         VentanaError("Fichero no encontrado");
@@ -60,9 +62,12 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
   
     if (!sumar) {
         Estadisticas.NumeroFichas = 0;
+        //establece un maximo de fichas que se pueden importar
         Estadisticas.MaxFichas = 3000;  
+        //da memoria al programa
         *Fichas = malloc(Estadisticas.MaxFichas * sizeof(DISCO));
         if (!(*Fichas)) {
+          
             VentanaError("Error reservando memoria");
             fclose(fichero);
             return;
@@ -71,47 +76,49 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
 
   
     fgets(buffer, 1024, fichero);
-
+    
+    //lee linea a linea el fichero
     while (fgets(buffer, 1024, fichero))
     {
+        //capacidad de memoria llena, muestra un error
         if (Estadisticas.NumeroFichas >= Estadisticas.MaxFichas) {
             VentanaError("Máximo de fichas alcanzado");
             break;
         }
 
         buffer[strcspn(buffer, "\n")] = 0;
-
+        // Obtiene un puntero a la siguiente posición libre
         DISCO *d = &((*Fichas)[Estadisticas.NumeroFichas]);
-
+        //divide la linea por ; que son los separadores del archivo csv
         token = strtok(buffer, ";");
-        d->Obra = strdup(token ? token : "");
+        d->Obra = strdup(token ? token : "");  //guarda info 
 
         token = strtok(NULL, ";");
-        d->ApellAutor = strdup(token ? token : "");
+        d->ApellAutor = strdup(token ? token : "");//guarda info 
 
         token = strtok(NULL, ";");
-        d->NomAutor = strdup(token ? token : "");
+        d->NomAutor = strdup(token ? token : "");//guarda info 
 
         token = strtok(NULL, ";");
-        d->Tonalidad = strdup(token ? token : "");
+        d->Tonalidad = strdup(token ? token : "");//guarda info 
 
         token = strtok(NULL, ";");
-        d->Opus = strdup(token ? token : "");
+        d->Opus = strdup(token ? token : "");//guarda info 
 
         token = strtok(NULL, ";");
-        d->Duracion = strdup(token ? token : "");
-
+        d->Duracion = strdup(token ? token : "");//guarda info 
+        //incrementa contador para que funcione el bucle
         Estadisticas.NumeroFichas++;
         numeroImportados++;
     }
 
-
+    //cierra el archivo
     fclose(fichero);
 
     gettimeofday(&fin, NULL);
-
+    //calcula la dif de tiempo
     Estadisticas.TiempoCarga = DifTiempo(inicio, fin);    
-
+    //prepara un mensaje de la cantidad de discos que han sido importados
     char msg[80];
     snprintf(msg, sizeof(msg),
              "%d discos importados correctamente", numeroImportados);

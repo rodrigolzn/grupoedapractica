@@ -22,7 +22,8 @@ void DescartarFichero(DISCO **Fichas,WINDOW *Wfichero)
     char Tecla;
     int numeroLineas = 0;
     int i;
-    
+
+    //ponemos las posibles soluciones que se pueden producir en el programa
     if (Estadisticas.NumeroFichas == 0) {
         VentanaError("No hay discos para descartar");
         return;
@@ -35,7 +36,7 @@ void DescartarFichero(DISCO **Fichas,WINDOW *Wfichero)
 
     // Libera el disco de memoria.
     free(Fichas);
-
+    //mensaje final
     char msg[80];
     snprintf(msg, sizeof(msg),
              "Ficheros desccartados.");
