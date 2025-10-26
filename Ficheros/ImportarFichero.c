@@ -1,4 +1,4 @@
-/*****************************************
+/***************
  * Nombre: ImortarFichero
  * Argumentos: DISCO **Fichas:   Puntero al array de discos
  *             WINDOW *Wfichero: Ventana para capturar el nombre del fichero
@@ -9,7 +9,7 @@
  * Reglas de uso: 
  * Código de Retorno:
  * Programador: JMSM (Sept-24)
- *****************************************/
+ ***************/
 
 #include "Ficheros.h"
 #include <errno.h>
@@ -25,6 +25,7 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
     char buffer[1024];
     char *token;
     int numeroImportados = 0;
+    struct timeval inicio, fin;
 
     if (!sumar && Estadisticas.NumeroFichas != 0) {
         VentanaError("Ya hay discos cargados");
@@ -46,6 +47,9 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
         if (ruta[0] != '\0')
             break;
     }
+      
+    gettimeofday(&inicio, NULL);
+
 
     fichero = fopen(ruta, "r");
     if (!fichero) {
@@ -56,7 +60,7 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
   
     if (!sumar) {
         Estadisticas.NumeroFichas = 0;
-        Estadisticas.MaxFichas = 2000;  
+        Estadisticas.MaxFichas = 3000;  
         *Fichas = malloc(Estadisticas.MaxFichas * sizeof(DISCO));
         if (!(*Fichas)) {
             VentanaError("Error reservando memoria");
@@ -101,7 +105,12 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
         numeroImportados++;
     }
 
+
     fclose(fichero);
+
+    gettimeofday(&fin, NULL);
+
+    Estadisticas.TiempoCarga = DifTiempo(inicio, fin);    
 
     char msg[80];
     snprintf(msg, sizeof(msg),
