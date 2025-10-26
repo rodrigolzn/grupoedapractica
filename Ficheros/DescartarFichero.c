@@ -34,10 +34,12 @@ void DescartarFichero(DISCO **Fichas,WINDOW *Wfichero)
     }
 
     // Libera el disco de memoria.
-    free(Fichas);
+    for (i = 0; i < Estadisticas.NumeroFichas; i++) {
+        free(Fichas[i]);
+    }
 
     char msg[80];
     snprintf(msg, sizeof(msg),
-             "Ficheros desccartados.");
+             "Ficheros descartados.");
     VentanaError(msg);
 }
