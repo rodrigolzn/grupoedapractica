@@ -120,7 +120,6 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
     Estadisticas.TiempoCarga = DifTiempo(inicio, fin);    
     //prepara un mensaje de la cantidad de discos que han sido importados
     char msg[80];
-    snprintf(msg, sizeof(msg),
-             "%d discos importados correctamente", numeroImportados);
+    snprintf(msg, sizeof(msg),"%d discos importados correctamente", numeroImportados);
     VentanaError(msg);
 }
