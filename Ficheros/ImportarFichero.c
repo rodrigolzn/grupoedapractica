@@ -13,30 +13,24 @@
 
 #include "Ficheros.h"
 #include <errno.h>
-#define MAX_BUF 8192
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX_BUF 1024
 
 void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
 {
     FILE *fichero = NULL;
     char ruta[50];
-    char buffer[MAX_BUF];
+    char buffer[1024];
     char *token;
-    int numeroLineas = 0;
-    int usados = sumar ? Estadisticas.NumeroFichas : 0;
-    int i;
-    
+    int numeroImportados = 0;
 
-    
     if (!sumar && Estadisticas.NumeroFichas != 0) {
         VentanaError("Ya hay discos cargados");
         return;
     }
-    if (sumar && Estadisticas.NumeroFichas == 0) {
-        VentanaError("No hay discos para sumar");
-        return;
-    }
 
-    
     while (true) {
         touchwin(Wfichero);
         wrefresh(Wfichero);
@@ -49,7 +43,8 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
         noecho();
         curs_set(0);
 
-        if (ruta[0] != '\0') break;
+        if (ruta[0] != '\0')
+            break;
     }
 
     fichero = fopen(ruta, "r");
@@ -58,12 +53,23 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
         return;
     }
 
-    // Reserva memoria.
-    for (i = 0; fgets(buffer, MAX_BUF, fichero) != NULL; i++)
-    *Fichas = malloc(i * sizeof(char));
+    // ✅ Reserva memoria si estamos reemplazando
+    if (!sumar) {
+        Estadisticas.NumeroFichas = 0;
+        Estadisticas.MaxFichas = 2000;  
+        *Fichas = malloc(Estadisticas.MaxFichas * sizeof(DISCO));
+        if (!(*Fichas)) {
+            VentanaError("Error reservando memoria");
+            fclose(fichero);
+            return;
+        }
+    }
 
-    while (fgets(buffer, MAX_BUF, fichero)) {
+    // ✅ Saltamos la cabecera
+    fgets(buffer, 1024, fichero);
 
+    while (fgets(buffer, 1024, fichero))
+    {
         if (Estadisticas.NumeroFichas >= Estadisticas.MaxFichas) {
             VentanaError("Máximo de fichas alcanzado");
             break;
@@ -73,9 +79,7 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
 
         DISCO *d = &((*Fichas)[Estadisticas.NumeroFichas]);
 
-        token = strtok(buffer, ";"); // ID (lo ignoramos)
-
-        token = strtok(NULL, ";");
+        token = strtok(buffer, ";");
         d->Obra = strdup(token ? token : "");
 
         token = strtok(NULL, ";");
@@ -94,13 +98,13 @@ void ImportarFichero(DISCO **Fichas, WINDOW *Wfichero, bool sumar)
         d->Duracion = strdup(token ? token : "");
 
         Estadisticas.NumeroFichas++;
-        numeroLineas++;
+        numeroImportados++;
     }
 
     fclose(fichero);
 
     char msg[80];
     snprintf(msg, sizeof(msg),
-             "%d discos importados correctamente", numeroLineas);
+             "%d discos importados correctamente", numeroImportados);
     VentanaError(msg);
 }
